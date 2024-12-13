@@ -60,7 +60,8 @@ const verifyAccount = async (reqBody) => {
     // Mọi thứ ok, update lại thông tin user
     const updateData = {
       isActive: true,
-      verifyToken: null
+      verifyToken: null,
+      updatedAt: Date.now()
     }
 
     const updatedUser = await userModel.update(existUser._id, updateData)
@@ -149,7 +150,8 @@ const update = async (userId, reqBody, userAvatarFile) => {
       }
       // Nếu như current_password là đúng thì hash new_password và update lại vào DB
       updatedUser = await userModel.update(userId, {
-        password: bcryptjs.hashSync(reqBody.new_password, 8)
+        password: bcryptjs.hashSync(reqBody.new_password, 8),
+        updatedAt: Date.now()
       })
     } else if (userAvatarFile) {
       // Trường hợp update avatar, upload file lên Cloudinary
@@ -158,11 +160,15 @@ const update = async (userId, reqBody, userAvatarFile) => {
 
       // Lưu lại secure_url file ảnh vào Database
       updatedUser = await userModel.update(userId, {
-        avatar: uploadResult.secure_url
+        avatar: uploadResult.secure_url,
+        updatedAt: Date.now()
       })
     } else {
       // Trường hợp update các thông tin chung như displayName
-      updatedUser = await userModel.update(userId, reqBody)
+      updatedUser = await userModel.update(userId, {
+        ...reqBody,
+        updatedAt: Date.now()
+      })
     }
 
     return pickUser(updatedUser)
