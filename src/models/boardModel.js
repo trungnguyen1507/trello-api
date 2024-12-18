@@ -100,6 +100,7 @@ const getDetails = async (userId, boardId) => {
             localField: 'ownerIds',
             foreignField: '_id',
             as: 'owners',
+            // pipeline để xử lý nhiều luồng, $project để loại bỏ các field không muốn lấy ra bằng cách gán giá trị 0
             pipeline: [{ $project: { 'password': 0, 'verifyToken': 0 } }]
           }
         },
