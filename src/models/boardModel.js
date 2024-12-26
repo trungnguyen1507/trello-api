@@ -177,7 +177,7 @@ const update = async (boardId, updateData) => {
   }
 }
 
-const getBoards = async (userId, page, itemsPerPage) => {
+const getBoards = async (userId, page, itemsPerPage, queryFilters) => {
   try {
     const queryCondition = [
       // Điều kiện 1: board chưa bị xoá
@@ -187,6 +187,25 @@ const getBoards = async (userId, page, itemsPerPage) => {
         $or: [{ ownerIds: { $all: [new ObjectId(userId)] } }, { memberIds: { $all: [new ObjectId(userId)] } }]
       }
     ]
+
+    // Xử lý query filter cho từng trường hợp search board, ví dụ search theo title
+    if (queryFilters) {
+      Object.keys(queryFilters).forEach((fieldName) => {
+        // Có phân biệt chữ hoa chữ thường
+        // queryCondition.push({
+        //   [fieldName]: {
+        //     $regex: queryFilters[fieldName]
+        //   }
+        // })
+
+        // Không phân biệt hoa thường
+        queryCondition.push({
+          [fieldName]: {
+            $regex: new RegExp(queryFilters[fieldName], 'i')
+          }
+        })
+      })
+    }
 
     const query = await GET_DB()
       .collection(BOARD_COLLECTION_NAME)
