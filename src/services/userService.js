@@ -4,13 +4,12 @@ import ApiError from '~/utils/ApiError'
 import bcryptjs from 'bcryptjs'
 import { v4 as uuidv4 } from 'uuid'
 import { pickUser } from '~/utils/formatters'
-import { WEBSITE_DOMAIN } from '~/utils/constants'
 import { BrevoProvider } from '~/providers/BrevoProvider'
 import { JwtProvider } from '~/providers/JwtProvider'
 import { env } from '~/config/environment'
 import { CloudinaryProvider } from '~/providers/CloudinaryProvider'
 
-const createNew = async (reqBody) => {
+const createNew = async (reqBody, domain) => {
   try {
     // Kiểm tra xem email đã tồn tại trong hệ thống hay chưa
     const existUser = await userModel.findOneByEmail(reqBody.email)
@@ -30,7 +29,7 @@ const createNew = async (reqBody) => {
     const createdUser = await userModel.createNew(newUser)
     const getNewUser = await userModel.findOneById(createdUser.insertedId)
     // Gửi email cho người dùng xác thực tài khoản
-    const verificationLink = `${WEBSITE_DOMAIN}/account/verification?email=${getNewUser.email}&token=${getNewUser.verifyToken}`
+    const verificationLink = `${domain}/account/verification?email=${getNewUser.email}&token=${getNewUser.verifyToken}`
     const customSubject = 'Trello MERN Stack Clone: Please verify your email before using our services!'
     const htmlContent = `
       <h3>Here is your verification link:</h3>

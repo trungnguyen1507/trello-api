@@ -5,7 +5,7 @@ import ApiError from '~/utils/ApiError'
 
 const createNew = async (req, res, next) => {
   try {
-    const createdUser = await userService.createNew(req.body)
+    const createdUser = await userService.createNew(req.body, req.websiteDomain)
     res.status(StatusCodes.CREATED).json(createdUser)
   } catch (error) {
     next(error)
